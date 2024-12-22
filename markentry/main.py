@@ -1,9 +1,9 @@
 from typing import Any, Union
 from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableConfig
-from base_workflow.workflow import workflow_graph
-from base_workflow.agents.orchestrator_agent import OrchestratorAgent
-from base_workflow.state import AgentState
+from markentry.workflow import workflow_graph
+from markentry.agents.orchestrator_agent import OrchestratorAgent
+from markentry.state import AgentState
 
 user_input = """This model runs a simulation of a DAO.
 			You are the DAO Governor. Your behave like a dictator and have the ultimate power to make the final decision. 
@@ -20,11 +20,8 @@ config: RunnableConfig = {'configurable': {'thread_id': '1'}, 'recursion_limit':
 orchestrator = OrchestratorAgent()
 orchestrator.store_user_task(user_input)
 initial_state = AgentState(
-        messages=[],
-        current_step=0,
-        total_steps=None,
-        user_task=user_input
-    )
+	messages=[], current_step=0, total_steps=None, user_task=user_input
+)
 
 
 def run_graph(input: Union[dict[str, Any], Any]):

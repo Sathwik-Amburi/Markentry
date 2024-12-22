@@ -1,4 +1,4 @@
-from base_workflow.workflow import workflow_graph
+from markentry.workflow import workflow_graph
 from langchain_core.runnables.graph import MermaidDrawMethod
 
 

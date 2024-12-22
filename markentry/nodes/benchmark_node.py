@@ -1,4 +1,4 @@
-from base_workflow.state import AgentState
+from markentry.state import AgentState
 
 
 def benchmark_node(state: AgentState):

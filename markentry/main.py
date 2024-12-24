@@ -1,13 +1,13 @@
 from typing import Any, Union
 from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableConfig
-from markentry.workflow import workflow_graph
-from markentry.agents.orchestrator_agent import OrchestratorAgent
-from markentry.state import AgentState
+from base_workflow.workflow import workflow_graph
+from base_workflow.agents.orchestrator_agent import OrchestratorAgent
+from base_workflow.state import AgentState
 
-user_input = """
-Design a comprehensive market entry strategy for Airbus's autonomous drone systems. 
-"""
+user_input = (
+	""" Design a comphresive market entry strategy for autonomous drones for Airbus"""
+)
 
 # "Order a vegetarian pizza to Arcisstrasse 21, 80333 Munich. Delivery will be paid in cash upon arrival."
 

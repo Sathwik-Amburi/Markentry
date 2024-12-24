@@ -1,5 +1,4 @@
 from typing import Any, Union
-from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableConfig
 from markentry.workflow import workflow_graph
 
@@ -17,27 +16,3 @@ def run_graph(input: Union[dict[str, Any], Any]):
 
 
 run_graph({'messages': [('user', user_input)]})
-
-snapshot = workflow_graph.get_state(config)
-
-while snapshot.next:
-	messages = workflow_graph.get_state(config).values['messages']
-	tool_call_id: str = messages[-1].tool_calls[0]['id']
-
-	question: str = messages[-1].tool_calls[0]['args']['question']
-	try:
-		user_input = input(question)
-	except any:
-		user_input = 'cancel'
-
-	tool_message = ToolMessage(content=user_input, tool_call_id=tool_call_id)
-
-	workflow_graph.update_state(
-		config,
-		{'messages': tool_message},
-		as_node='call_tool',
-	)
-
-	run_graph(None)
-
-	snapshot = workflow_graph.get_state(config)

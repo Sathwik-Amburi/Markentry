@@ -47,14 +47,5 @@ for node_name, node in expert_nodes.items():
 # Connect 'START' to 'supervisor'
 workflow.add_edge(START, 'supervisor')
 
-# List of all nodes to be interconnected (excluding 'START')
-all_nodes = ['supervisor'] + list(expert_nodes.keys())
-
-# Add edges between every pair of nodes (excluding self-connections)
-for source_node in all_nodes:
-	for target_node in all_nodes:
-		if source_node != target_node:
-			workflow.add_edge(source_node, target_node)
-
 # Compile the workflow graph with the updated configuration
 workflow_graph = workflow.compile()

@@ -15,7 +15,7 @@ def planner_node(state: AgentState) -> AgentState:
 				content = result.content.strip()
 				parsed = json.loads(content)
 				planner_state.steps = parsed['steps']
-			except:
+			except Exception:
 				planner_state.steps = ['No steps needed at the current state.']
 
 	current_time = planner_state.get_elapsed_time()

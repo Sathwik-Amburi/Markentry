@@ -2,7 +2,7 @@
 name = "markentry"
 version = "0.1.0"
 description = ""
-authors = ["Sathwik Amburi <sathwik.amburi[at]tum.de","Tai Zhang <ge23wut[at]mytum.de>","Lukas Beckenbauer <lukas.beckenbauer[at]tum.de>", "Mel Grosser <grosser.mel[at]live.de>"]
+authors = ["Sathwik Amburi <sathwik.amburi[at]tum.de>","Tai Zhang <ge23wut[at]mytum.de>","Lukas Beckenbauer <lukas.beckenbauer[at]tum.de>", "Mel Grosser <grosser.mel[at]live.de>"]
 readme = "README.md"
 
 [tool.poetry.scripts]

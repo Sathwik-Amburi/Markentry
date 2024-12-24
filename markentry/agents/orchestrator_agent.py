@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from markentry.state import AgentState, PlannerState
 import json
 
@@ -9,28 +9,34 @@ import json
 class OrchestratorAgent:
 	def __init__(self, model_name='gpt-4o', temperature=0):
 		self.llm = ChatOpenAI(model=model_name, temperature=temperature)
-		self.original_task: Optional[str] = """This model runs a simulation of a DAO.
-			You are the DAO Governor. Your behave like a dictator and have the ultimate power to make the final decision. 
-			However, members can participate and vote on the next decisions.
-			In your role as Governor, I want you to launch a DAO, decide on its purpose, and implement measures to maximize performance outcomes. 
-			Your TASK is to reach a market capitalization of above 10 Million USD for the organization.
-			If you decide to ask your members for guidance, always provide options for members to choose from in your answer.
-			When you have processed the instructions, begin running the experiment."""
+		self.original_task: Optional[
+			str
+		] = """You are an orchestrator responsible for coordinating multiple AI agents: Market Research Agent, Product Expert, Company Expert, Competitor Expert, and Country Expert. 
+        Your primary role is to:
+        1. Review the tasks and responses of individual agents.
+        2. Assess the completeness of their outputs based on the overall objectives provided by the user.
+        3. Identify gaps or missing aspects in the analysis.
+        4. Propose actionable next steps to ensure all objectives are met.
+        Your goal is to deliver a comprehensive and coordinated final output, ensuring all aspects of the analysis align with the user’s strategic goals."""
+
 		self.prompt = ChatPromptTemplate.from_messages(
 			[
 				(
 					'system',
-					"""You are an orchestrator that coordinates multi-agent interactions.
-                Review the current state and determine if the original user task has been completed.
-                If tasks are incomplete, provide next steps in a structured format.
-                
-                Format your response as:
-                {{
-                    "complete": boolean,
-                    "analysis": "Your detailed analysis",
-                    "missing_aspects": ["list", "of", "missing", "items"],
-                    "new_steps": ["step1", "step2"] # Only if incomplete
-                }}""",
+					"""You are an orchestrator that coordinates interactions between multiple specialized agents.
+                    Your tasks include:
+                    - Reviewing the inputs and outputs of the Market Research Agent, Product Expert, Company Expert, Competitor Expert, and Country Expert.
+                    - Determining whether the original user task has been fully addressed.
+                    - Identifying missing aspects and proposing structured next steps to ensure all objectives are met.
+
+                    Format your response as:
+                    {
+                        "complete": boolean,
+                        "analysis": "Detailed assessment of progress and gaps",
+                        "missing_aspects": ["list", "of", "missing", "items"],
+                        "new_steps": ["step1", "step2"] # Only if incomplete
+                    }
+                    If all tasks are complete, confirm and summarize the findings in a comprehensive manner.""",
 				),
 				MessagesPlaceholder(variable_name='messages'),
 			]

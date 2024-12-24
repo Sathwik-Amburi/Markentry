@@ -1,8 +1,7 @@
 from langchain_openai import ChatOpenAI
 
-from markentry.tools.tavily_search import tavily_search
-from markentry.tools.ask_user import ask_user
-from markentry.utils import create_agent
+from langgraph.prebuilt import create_react_agent
+from markentry.tools import tavily_search
 
 llm = ChatOpenAI(model='gpt-4o-mini')
 
@@ -43,8 +42,6 @@ Your insights should be clear, structured, and actionable, ensuring products ali
 """
 
 
-product_expert = create_agent(
-	llm,
-	[tavily_search, ask_user],
-	system_message,
+product_expert = create_react_agent(
+	llm, tools=[tavily_search], state_modifier=system_message
 )

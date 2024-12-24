@@ -1,44 +1,51 @@
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, StateGraph
-from langgraph.prebuilt import ToolNode
+from langgraph.graph import StateGraph, MessagesState, START
+from langchain_openai import ChatOpenAI
+from markentry.utils import make_supervisor_node
 
-from markentry.router import router
-from markentry.nodes import agent_node, benchmark_node
-from markentry.state import AgentState
-from markentry.tools import (
-	ask_user,
-	execute_python,
-	get_available_cities,
-	get_restaurants_and_menu_in_city,
-	order_pizza,
+from markentry.nodes import (
+	market_expert_node,
+	company_expert_node,
+	country_expert_node,
+	competitor_expert_node,
+	product_expert_node,
 )
 
+# Initialize the workflow with the appropriate state
+workflow = StateGraph(MessagesState)
 
-workflow = StateGraph(AgentState)
-
-workflow.add_node('agent', agent_node)
-workflow.add_node('benchmark', benchmark_node)
-workflow.add_node(
-	'call_tool',
-	ToolNode(
-		[
-			ask_user,
-			execute_python,
-			get_available_cities,
-			get_restaurants_and_menu_in_city,
-			order_pizza,
-		]
-	),
+# Make a Supervisor Node
+llm = ChatOpenAI(model='gpt-4o-mini')
+market_research_supervisor_node = make_supervisor_node(
+	llm,
+	[
+		'company_expert',
+		'competitor_expert',
+		'market_expert',
+		'product_expert',
+		'country_expert',
+	],
 )
-workflow.add_edge('call_tool', 'agent')
-workflow.add_edge('agent', 'benchmark')
-workflow.add_conditional_edges(
-	'benchmark',
-	router,
-	{'continue': 'agent', 'call_tool': 'call_tool', 'end': END},
-)
-workflow.set_entry_point('agent')
 
-memory = MemorySaver()
+# Add the 'supervisor' node
+workflow.add_node('supervisor', market_research_supervisor_node)
 
-workflow_graph = workflow.compile(checkpointer=memory)
+# Add nodes
+workflow.add_node('market_expert', market_expert_node)
+workflow.add_node('company_expert', company_expert_node)
+workflow.add_node('country_expert', country_expert_node)
+workflow.add_node('competitor_expert', competitor_expert_node)
+workflow.add_node('product_expert', product_expert_node)
+
+# Connect 'START' to 'supervisor'
+workflow.add_edge(START, 'supervisor')
+
+
+# Connect 'market_expert' to all expert nodes
+workflow.add_edge('market_expert', 'company_expert')
+workflow.add_edge('market_expert', 'country_expert')
+workflow.add_edge('market_expert', 'competitor_expert')
+workflow.add_edge('market_expert', 'product_expert')
+
+
+# Compile the workflow graph with the updated configuration
+workflow_graph = workflow.compile()

@@ -1,23 +1,11 @@
 from typing import Any, Union
 from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableConfig
-from base_workflow.workflow import workflow_graph
-from base_workflow.agents.orchestrator_agent import OrchestratorAgent
-from base_workflow.state import AgentState
+from markentry.workflow import workflow_graph
 
-user_input = (
-	""" Design a comphresive market entry strategy for autonomous drones for Airbus"""
-)
-
-# "Order a vegetarian pizza to Arcisstrasse 21, 80333 Munich. Delivery will be paid in cash upon arrival."
+user_input = 'Give me market entry strategy for autonomous drones for aibus'
 
 config: RunnableConfig = {'configurable': {'thread_id': '1'}, 'recursion_limit': 150}
-
-orchestrator = OrchestratorAgent()
-orchestrator.store_user_task(user_input)
-initial_state = AgentState(
-	messages=[], current_step=0, total_steps=None, user_task=user_input
-)
 
 
 def run_graph(input: Union[dict[str, Any], Any]):

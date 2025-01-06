@@ -1,6 +1,8 @@
 from langgraph.graph import StateGraph, MessagesState, START
 from langchain_openai import ChatOpenAI
 from markentry.utils import make_supervisor_node
+from langgraph.checkpoint.memory import MemorySaver
+
 
 from markentry.nodes import (
 	market_expert_node,
@@ -8,44 +10,24 @@ from markentry.nodes import (
 	country_expert_node,
 	competitor_expert_node,
 	product_expert_node,
+    human_node
 )
 
 # Initialize the workflow with the appropriate state
-workflow = StateGraph(MessagesState)
+builder = StateGraph(MessagesState)
 
 # Initialize the Language Model
 llm = ChatOpenAI(model='gpt-4o-mini')
+builder.add_node("company_expert", company_expert_node)
+builder.add_node("competitor_expert", competitor_expert_node)
+builder.add_node("country_expert", country_expert_node)
+builder.add_node("product_expert", product_expert_node)
+builder.add_node("theoretical_market_expert", market_expert_node)
+# This adds a node to collect human input, which will route
+# back to the active agent.
+builder.add_node("human", human_node)
 
-# Make a Supervisor Node
-market_research_supervisor_node = make_supervisor_node(
-	llm,
-	[
-		'company_expert',
-		'competitor_expert',
-		'market_expert',
-		'product_expert',
-		'country_expert',
-	],
-)
-
-# Add the 'supervisor' node
-workflow.add_node('supervisor', market_research_supervisor_node)
-
-# Define all expert nodes in a dictionary for easy management
-expert_nodes = {
-	'market_expert': market_expert_node,
-	'company_expert': company_expert_node,
-	'country_expert': country_expert_node,
-	'competitor_expert': competitor_expert_node,
-	'product_expert': product_expert_node,
-}
-
-# Add all expert nodes to the workflow
-for node_name, node in expert_nodes.items():
-	workflow.add_node(node_name, node)
-
-# Connect 'START' to 'supervisor'
-workflow.add_edge(START, 'supervisor')
-
-# Compile the workflow graph with the updated configuration
-workflow_graph = workflow.compile()
+# We'll always start with a general travel advisor.
+builder.add_edge(START, "theoretical_market_expert")
+checkpointer = MemorySaver()
+graph = builder.compile(checkpointer=checkpointer)

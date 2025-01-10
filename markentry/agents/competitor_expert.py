@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
-from markentry.tools import tavily_search
+from markentry.tools import tavily_search, make_handoff_tool
 
 llm = ChatOpenAI(model='gpt-4o-mini')
 
@@ -47,8 +47,14 @@ Output Structure:
 
 Your insights should be clear, structured, and actionable, helping the company navigate the competitive landscape and seize opportunities for growth and differentiation.
 """
-
+competitor_expert_tools = [
+    tavily_search,
+    make_handoff_tool(agent_name="company_expert"),
+    make_handoff_tool(agent_name="country_expert"),
+    make_handoff_tool(agent_name="product_expert"),
+    make_handoff_tool(agent_name="theoretical_market_expert"),
+]
 
 competitor_expert = create_react_agent(
-	llm, tools=[tavily_search], state_modifier=system_message
+	llm, tools=competitor_expert_tools, state_modifier=system_message
 )

@@ -5,6 +5,7 @@ from .country_expert_node import country_expert_node
 from .competitor_expert_node import competitor_expert_node
 from .product_expert_node import product_expert_node
 from .market_expert_node import market_expert_node
+from .human_node import human_node
 
 __all__ = [
 	'agent_node',
@@ -14,4 +15,5 @@ __all__ = [
 	'competitor_expert_node',
 	'product_expert_node',
 	'market_expert_node',
+    'human_node'
 ]

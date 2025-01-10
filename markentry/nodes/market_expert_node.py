@@ -6,14 +6,6 @@ from langgraph.graph import MessagesState
 from typing import Literal
 
 
-def market_expert_node(state: MessagesState) -> Command[Literal['supervisor']]:
-	result = market_expert.invoke(state)
-	return Command(
-		update={
-			'messages': [
-				HumanMessage(content=result['messages'][-1].content, name='search')
-			]
-		},
-		# We want our workers to ALWAYS "report back" to the supervisor when done
-		goto='supervisor',
-	)
+def market_expert_node(state: MessagesState) -> Command[Literal["company_expert", "competitor_expert", "country_expert", "product_expert", "human"]]:
+	response = market_expert.invoke(state)
+	return Command(update=response, goto='human')

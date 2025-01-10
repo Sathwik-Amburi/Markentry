@@ -1,10 +1,10 @@
-# Archipel-Monorepo
-This orchestrator is some wild multi agent stuff... Oo!
+# Markentry
+Multi-Agent RAG System for Market Entry Strategic Development
 
 ## How to install the project
 1. clone the repo locally
 ```bash
-$ git clone https://github.com/ArchipelAi/archipel-monorepo.git
+$ git clone https://github.com/Sathwik-Amburi/Markentry.git
 ```
 2. go into the project
 ```bash

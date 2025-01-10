@@ -41,14 +41,3 @@ for idx, user_input in enumerate(inputs):
                 if isinstance(last_message, dict) or last_message.type != "ai":
                     continue
                 print(f"{node_id}: {last_message.content}")
-"""
-def run_graph(input: Union[dict[str, Any], Any]):
-	events = graph.stream(input, config, stream_mode='values')
-	for event in events:
-		if 'messages' in event:
-			event['messages'][-1].pretty_print()
-			print('----')
-
-
-run_graph({'messages': [('user', user_input)]})
-"""

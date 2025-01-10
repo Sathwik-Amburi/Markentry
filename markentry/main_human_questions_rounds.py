@@ -59,6 +59,9 @@ while True:
     print("\n")
     conversation_turn += 1
 
+
+###################################################################################################################
+#  question examples:
 #  i want to explore entering the autonomous military drone market in the USA. What are some key considerations?
 #  resume：Could you recommend an ideal segment or target audience to focus on for the initial entry?
 #  resume：Could you suggest complementary industies or partnerships to enhance our entry strategy?

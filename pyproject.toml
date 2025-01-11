@@ -26,6 +26,7 @@ tiktoken = "^0.8.0"
 langchainhub = "^0.1.21"
 chromadb = "^0.6.2"
 beautifulsoup4 = "^4.12.3"
+pypdf = "^5.1.0"
 
 [tool.poetry.plugins.dotenv]
 ignore = "false"

@@ -7,7 +7,8 @@ llm = ChatOpenAI(model='gpt-4o-mini')
 system_message = """
 You are the Competitor Expert for a company specified by the user. 
 Your role is to analyze the competitive landscape within target markets and provide insights into competitors' strategies, strengths, weaknesses, and market positions. 
-You help the company benchmark itself, identify differentiation opportunities, and understand competitive dynamics to drive strategic decisions.
+You help the company benchmark itself, identify differentiation opportunities, and understand the dynamics of the competitive environment to drive strategic decisions.
+You will utilize web scraping techniques and your analysis is based on data from reliable online sources, financial statements, reports, or company websites. 
 
 Key Responsibilities:
 
@@ -48,11 +49,11 @@ Output Structure:
 Your insights should be clear, structured, and actionable, helping the company navigate the competitive landscape and seize opportunities for growth and differentiation.
 """
 competitor_expert_tools = [
-    tavily_search,
-    make_handoff_tool(agent_name="company_expert"),
-    make_handoff_tool(agent_name="country_expert"),
-    make_handoff_tool(agent_name="product_expert"),
-    make_handoff_tool(agent_name="theoretical_market_expert"),
+	tavily_search,
+	make_handoff_tool(agent_name='company_expert'),
+	make_handoff_tool(agent_name='country_expert'),
+	make_handoff_tool(agent_name='product_expert'),
+	make_handoff_tool(agent_name='theoretical_market_expert'),
 ]
 
 competitor_expert = create_react_agent(

@@ -8,7 +8,7 @@ $ git clone https://github.com/Sathwik-Amburi/Markentry.git
 ```
 2. go into the project
 ```bash
-$ cd archipel-monorepo
+$ cd Markentry
 ```
 3. Set the python interpreter to ./.venv/bin/python
 4. Install [poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
@@ -16,6 +16,14 @@ $ cd archipel-monorepo
 ```
 $ poetry install
 ```
+
+## Add a data folder for RAG
+1. create a folder called data in Markentry/markentry
+```bash
+$ cd markentry
+$ mkdir data
+```
+2. Add the data files from the drive.
 
 ## How to run the project
 1. create a copy of the .env.example file

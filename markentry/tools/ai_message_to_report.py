@@ -100,52 +100,51 @@ Long-Term (1+ year): Strategic actions to expand in the market and deepen relati
 
 """
 
+
 def generate_report_from_markdown(md_file_path, model, output_dir):
-    """Generate a report from a markdown file based on a given template."""
-    # Load the markdown content
-    with open(md_file_path, "r") as md_file:
-        results_content_md = md_file.read()
+	"""Generate a report from a markdown file based on a given template."""
+	# Load the markdown content
+	with open(md_file_path, 'r') as md_file:
+		results_content_md = md_file.read()
 
-    # define model messages based on the input and desired outputs
-    messages = [
-        SystemMessage(content=report_system_prompt),
-        HumanMessage(content=results_content_md)
-    ]
+	# define model messages based on the input and desired outputs
+	messages = [
+		SystemMessage(content=report_system_prompt),
+		HumanMessage(content=results_content_md),
+	]
 
-    report = model.invoke(messages).content
+	report = model.invoke(messages).content
 
-    # # Ensure the directory exists
-    # os.makedirs(output_dir, exist_ok=True)
+	# # Ensure the directory exists
+	# os.makedirs(output_dir, exist_ok=True)
 
-    # # File path for the conversation log
-    # output_md_path = os.path.join(output_dir, "rewrite_conversation_log.md")
+	# # File path for the conversation log
+	# output_md_path = os.path.join(output_dir, "rewrite_conversation_log.md")
 
-    # # Check if the file exists
-    # if os.path.exists(md_file_path):
-    #     # If the file exists, delete it
-    #     os.remove(md_file_path)
-    #     print(f"Existing file 'rewrite_conversation_log.md' deleted from {output_dir}")
+	# # Check if the file exists
+	# if os.path.exists(md_file_path):
+	#     # If the file exists, delete it
+	#     os.remove(md_file_path)
+	#     print(f"Existing file 'rewrite_conversation_log.md' deleted from {output_dir}")
 
-    # # create the file
-    # with open(output_md_path, "w", encoding="utf-8") as md_file:
-    #     md_file.write("# Conversation Log\n\n")
-    #     for entry in report:
-    #         md_file.write(f"{entry}\n\n")
+	# # create the file
+	# with open(output_md_path, "w", encoding="utf-8") as md_file:
+	#     md_file.write("# Conversation Log\n\n")
+	#     for entry in report:
+	#         md_file.write(f"{entry}\n\n")
 
-    # print(f"Conversation log saved as 'conversation_log.md' at {output_md_path}")
-    return report
-
-
-if __name__ == "__main__":
-    # rewrite the report according to report template
-    model = ChatOpenAI(model="gpt-4o-mini")
-    # Load the ai_response content
-    md_file_path = "/Users/taizhang/Desktop/Markentry/markentry/outputs/conversation_log.md"
-    # Directory where the output .md file will be saved
-    output_dir = "/Users/taizhang/Desktop/Markentry/markentry/outputs"
-    output_pdf_path = os.path.join(output_dir, "rewrite_conversation_log.pdf")
-    # Generate the report and save as Markdown
-    report_content = generate_report_from_markdown(md_file_path, model, output_dir)
-    print(report_content)
+	# print(f"Conversation log saved as 'conversation_log.md' at {output_md_path}")
+	return report
 
 
+if __name__ == '__main__':
+	# rewrite the report according to report template
+	model = ChatOpenAI(model='gpt-4o-mini')
+	# Load the ai_response content
+	md_file_path = 'markentry/outputs/conversation_log.md'
+	# Directory where the output .md file will be saved
+	output_dir = 'markentry/outputs'
+	output_pdf_path = os.path.join(output_dir, 'rewrite_conversation_log.pdf')
+	# Generate the report and save as Markdown
+	report_content = generate_report_from_markdown(md_file_path, model, output_dir)
+	print(report_content)

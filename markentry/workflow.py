@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from markentry.state import AgentState
 from markentry.tools.retriever_tool import retriever_tool
-from markentry.tools.get_product_insight_tool import get_product_insights_tool
+
 
 from markentry.utils import rag_utils
 from langgraph.prebuilt import tools_condition

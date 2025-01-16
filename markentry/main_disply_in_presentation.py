@@ -1,11 +1,10 @@
 from typing import Any, Union
 from langchain_core.runnables import RunnableConfig
 from markentry.workflow import graph
-from langgraph.types import Command, interrupt
+from langgraph.types import Command
 from markentry.tools.report_tool import generate_report, save_var_to_md, markdown_to_pdf
-from langchain_openai import ChatOpenAI
 import uuid
-import os
+
 
 
 # Configuration
@@ -13,6 +12,9 @@ thread_config: RunnableConfig = {
     'configurable': {"thread_id": uuid.uuid4()},
     'recursion_limit': 150
 }
+
+# Directory where the output PDF will be saved
+output_dir = "/Users/taizhang/Desktop/Markentry/markentry/outputs"
 
 def is_command(input_str: str) -> bool:
     """
@@ -29,7 +31,7 @@ print("Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'e
 
 conversation_turn = 1
 user_input = None
-predefined_inputs = ['What are the key capabilities and features of the product of Fortio Tactical?', 
+predefined_inputs = ['What are the key capabilities and features of the product of Fortion Tactical?', 
                      'resume: What are the primary use cases for Fortion Tactical?',
                      'resume: What are the advantages of using Fortion Tactical compared to alternatives?']
 
@@ -37,13 +39,13 @@ while True:
     print(f"--- Conversation Turn {conversation_turn} ---")
     if conversation_turn > len(predefined_inputs):
         user_input = input("User: ").strip()
-        print("\nProcessing...\n")
     else:
         user_input = predefined_inputs[conversation_turn - 1]
-        print(f"\nProcessing predefined question {conversation_turn} : {user_input}\n")
-
+    
     if user_input.lower() == "report":
-        ###Processing the report###
+        print("Processing the report......")
+        file_path = save_var_to_md(output_dir, ai_respond_results)
+        generate_report(file_path)
         conversation_turn += 1
         continue
     elif user_input.lower() == "exit":
@@ -59,6 +61,8 @@ while True:
         print("Follow up question recognized!")
     else:
         graph_input = {"messages": [{"role": "user", "content": user_input}]}
+
+    print("\nProcessing...\n")
 
     # Process the graph input and stream responses
     for update in graph.stream(
@@ -80,12 +84,10 @@ while True:
     print("\n")
     conversation_turn += 1
 
-# Directory where the output PDF will be saved
-output_dir = "/Users/taizhang/Desktop/Markentry/markentry/outputs"
-
 file_path = save_var_to_md(output_dir, ai_respond_results)
 report_dir = generate_report(file_path)
 markdown_to_pdf(report_dir)
+
 
 ###################################################################################################################
 #  question examples:

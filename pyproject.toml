@@ -27,6 +27,7 @@ langchainhub = "^0.1.21"
 chromadb = "^0.6.2"
 beautifulsoup4 = "^4.12.3"
 pypdf = "^5.1.0"
+streamlit = "^1.41.1"
 
 [tool.poetry.plugins.dotenv]
 ignore = "false"

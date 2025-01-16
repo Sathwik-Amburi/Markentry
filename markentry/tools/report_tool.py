@@ -127,97 +127,100 @@ Activities for establishing a presence and securing contracts or business deals.
 Strategic actions to expand in the market and deepen relationships with government and business stakeholders.  
 """
 # regenerate the 'conversation_log.md' into 'report_content'
-model = ChatOpenAI(model="gpt-4o-mini")
-
-def generate_report(md_file_path, filename="rewrite_conversation_log.md"):
-    """Generate a report from a markdown file based on a given template."""
-    # Load the markdown content
-    with open(md_file_path, "r") as md_file:
-        results_content_md = md_file.read()
-
-    # define model messages based on the input and desired outputs
-    messages = [
-        SystemMessage(content=report_system_prompt),
-        HumanMessage(content=results_content_md)
-    ]
-
-    report = model.invoke(messages).content
-
-    # Ensure `report_content` is a string
-    if isinstance(report, (list, dict)):
-        # Convert list or dict to string
-        report_content_str = "\n".join([str(item) for item in report]) if isinstance(report, list) else str(report)
-    else:
-        report_content_str = str(report)
-        
-    output_dir = os.path.dirname(md_file_path)
-    rewrite_output_path = os.path.join(output_dir, filename)
-
-    # Save the report content to a .md file
-    with open(rewrite_output_path, "w", encoding="utf-8") as md_file:
-        md_file.write(report_content_str)
-
-    print(f"Conversation log saved as '{filename}' at {rewrite_output_path}")
-    return rewrite_output_path
+model = ChatOpenAI(model='gpt-4o-mini')
 
 
+def generate_report(md_file_path, filename='rewrite_conversation_log.md'):
+	"""Generate a report from a markdown file based on a given template."""
+	# Load the markdown content
+	with open(md_file_path, 'r') as md_file:
+		results_content_md = md_file.read()
 
-def save_var_to_md(output_dir, ai_respond_results, filename="conversation_log.md"):
-    """
-    Saves AI conversation results to a markdown file.
+	# define model messages based on the input and desired outputs
+	messages = [
+		SystemMessage(content=report_system_prompt),
+		HumanMessage(content=results_content_md),
+	]
 
-    Parameters:
-    - output_dir (str): The directory where the file will be saved.
-    - ai_respond_results (list): A list of conversation entries to be written to the file.
-    - filename (str): The name of the output file (default: "conversation_log.md").
-    
-    Returns:
-    - str: The full path of the saved conversation log file.
-    """
-    # Ensure the directory exists
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # File path for the conversation log
-    output_file_path = os.path.join(output_dir, filename)
-    
-    # Write conversation log to the file
-    with open(output_file_path, "w", encoding="utf-8") as md_file:
-        md_file.write("# Conversation Log\n\n")
-        for entry in ai_respond_results:
-            md_file.write(f"{entry}\n\n")
-    
-    print(f"Conversation log saved as '{filename}' at {output_file_path}")
-    return output_file_path
+	report = model.invoke(messages).content
 
+	# Ensure `report_content` is a string
+	if isinstance(report, (list, dict)):
+		# Convert list or dict to string
+		report_content_str = (
+			'\n'.join([str(item) for item in report])
+			if isinstance(report, list)
+			else str(report)
+		)
+	else:
+		report_content_str = str(report)
 
+	output_dir = os.path.dirname(md_file_path)
+	rewrite_output_path = os.path.join(output_dir, filename)
 
-def markdown_to_pdf(input_md_path, filename="report.pdf"):
-    """
-    Convert a Markdown file to a PDF file.
+	# Save the report content to a .md file
+	with open(rewrite_output_path, 'w', encoding='utf-8') as md_file:
+		md_file.write(report_content_str)
 
-    Parameters:
-        input_md_path (str): Path to the input Markdown file.
-        output_pdf_path (str): Path to save the output PDF file.
-    """
-    # Ensure the input file exists
-    if not os.path.exists(input_md_path):
-        raise FileNotFoundError(f"The file {input_md_path} does not exist.")
-
-    # Read Markdown and convert to HTML
-    with open(input_md_path, "r", encoding="utf-8") as file:
-        markdown_text = file.read()
-
-    html_text = markdown2.markdown(markdown_text)
-    output_dir = os.path.dirname(input_md_path)
-    output_file_path = os.path.join(output_dir, filename)
-    # Convert HTML to PDF
-    HTML(string=html_text).write_pdf(output_file_path)
-
-    print(f"Document is saved to {output_file_path}")
+	print(f"Conversation log saved as '{filename}' at {rewrite_output_path}")
+	return rewrite_output_path
 
 
-if __name__ == "__main__":
-    # Example usage
-    input_md_path = "/Users/taizhang/Desktop/Markentry/markentry/outputs/conversation_log.md"
-    md_file_name = generate_report(input_md_path)
-    markdown_to_pdf(md_file_name)
+def save_var_to_md(output_dir, ai_respond_results, filename='conversation_log.md'):
+	"""
+	Saves AI conversation results to a markdown file.
+
+	Parameters:
+	- output_dir (str): The directory where the file will be saved.
+	- ai_respond_results (list): A list of conversation entries to be written to the file.
+	- filename (str): The name of the output file (default: "conversation_log.md").
+
+	Returns:
+	- str: The full path of the saved conversation log file.
+	"""
+	# Ensure the directory exists
+	os.makedirs(output_dir, exist_ok=True)
+
+	# File path for the conversation log
+	output_file_path = os.path.join(output_dir, filename)
+
+	# Write conversation log to the file
+	with open(output_file_path, 'w', encoding='utf-8') as md_file:
+		md_file.write('# Conversation Log\n\n')
+		for entry in ai_respond_results:
+			md_file.write(f'{entry}\n\n')
+
+	print(f"Conversation log saved as '{filename}' at {output_file_path}")
+	return output_file_path
+
+
+def markdown_to_pdf(input_md_path, filename='report.pdf'):
+	"""
+	Convert a Markdown file to a PDF file.
+
+	Parameters:
+	    input_md_path (str): Path to the input Markdown file.
+	    output_pdf_path (str): Path to save the output PDF file.
+	"""
+	# Ensure the input file exists
+	if not os.path.exists(input_md_path):
+		raise FileNotFoundError(f'The file {input_md_path} does not exist.')
+
+	# Read Markdown and convert to HTML
+	with open(input_md_path, 'r', encoding='utf-8') as file:
+		markdown_text = file.read()
+
+	html_text = markdown2.markdown(markdown_text)
+	output_dir = os.path.dirname(input_md_path)
+	output_file_path = os.path.join(output_dir, filename)
+	# Convert HTML to PDF
+	HTML(string=html_text).write_pdf(output_file_path)
+
+	print(f'Document is saved to {output_file_path}')
+
+
+if __name__ == '__main__':
+	# Example usage
+	input_md_path = 'outputs/conversation_log.md'
+	md_file_name = generate_report(input_md_path)
+	markdown_to_pdf(md_file_name)

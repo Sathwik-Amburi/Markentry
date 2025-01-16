@@ -3,8 +3,8 @@ from langgraph.prebuilt import ToolNode
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from markentry.state import AgentState
-from markentry.tools.retriever_tool import retriever_tool
-from markentry.tools.get_product_insight_tool import get_product_insights_tool
+from markentry.tools.company_data_retriever_tool import company_data_retriever_tool
+
 
 from markentry.utils import rag_utils
 from langgraph.prebuilt import tools_condition
@@ -27,7 +27,7 @@ builder.add_node('company_expert', company_expert_node)
 
 # RAG
 # builder.add_node('agent', rag_utils.agent)  # agent
-retrieve = ToolNode([retriever_tool])
+retrieve = ToolNode([company_data_retriever_tool])
 builder.add_node('retrieve', retrieve)  # retrieval
 builder.add_node('rewrite', rag_utils.rewrite)  # Re-writing the question
 

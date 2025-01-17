@@ -3,7 +3,7 @@ from langgraph.prebuilt import ToolNode
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from markentry.state import AgentState
-from markentry.tools.company_data_retriever_tool import company_data_retriever_tool
+from markentry.tools.product_data_retriever_tool import product_data_retriever_tool
 
 
 from markentry.utils import rag_utils
@@ -25,9 +25,13 @@ builder = StateGraph(AgentState)
 llm = ChatOpenAI(model='gpt-4o-mini')
 builder.add_node('company_expert', company_expert_node)
 
+
+builder.add_node('competitor_expert', competitor_expert_node)
+builder.add_node('country_expert', country_expert_node)
+builder.add_node('product_expert', product_expert_node)
 # RAG
 # builder.add_node('agent', rag_utils.agent)  # agent
-retrieve = ToolNode([company_data_retriever_tool])
+retrieve = ToolNode([product_data_retriever_tool])
 builder.add_node('retrieve', retrieve)  # retrieval
 builder.add_node('rewrite', rag_utils.rewrite)  # Re-writing the question
 
@@ -37,7 +41,7 @@ builder.add_node(
 
 # Decide whether to retrieve
 builder.add_conditional_edges(
-	'company_expert',
+	'product_expert',
 	# Assess agent decision
 	tools_condition,
 	{
@@ -52,42 +56,7 @@ builder.add_conditional_edges(
 	# Assess agent decision
 	rag_utils.grade_documents,
 )
-builder.add_edge('rewrite', 'company_expert')
-
-
-builder.add_node('competitor_expert', competitor_expert_node)
-builder.add_node('country_expert', country_expert_node)
-builder.add_node('product_expert', product_expert_node)
-"""
-# RAG for product expert
-# builder.add_node('agent', rag_utils.agent)  # agent
-get_product_insights_tool = ToolNode([get_product_insights_tool])
-builder.add_node('get_product_insights_tool', get_product_insights_tool)  # retrieval
-builder.add_node('rewrite_for_product', rag_utils.rewrite)  # Re-writing the question
-
-builder.add_node(
-	'generate_for_product', rag_utils.generate
-)  # Generating a response after we know the documents are relevant
-
-# Decide whether to retrieve
-builder.add_conditional_edges(
-	'product_expert',
-	# Assess agent decision
-	tools_condition,
-	{
-		# Translate the condition outputs to nodes in our graph
-		'tools': 'get_product_insights_tool',
-	},
-)
-
-# Edges taken after the `action` node is called.
-builder.add_conditional_edges(
-	'get_product_insights_tool',
-	# Assess agent decision
-	rag_utils.grade_documents,
-)
-builder.add_edge('rewrite_for_product', 'product_expert')
-"""
+builder.add_edge('rewrite', 'product_expert')
 
 builder.add_node('theoretical_market_expert', market_expert_node)
 # This adds a node to collect human input, which will route

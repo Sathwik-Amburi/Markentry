@@ -7,7 +7,7 @@ import os
 
 current_dir = os.path.dirname(__file__)
 
-file_path = os.path.join(current_dir, '..', 'TestFile-ProductExpert.pdf')
+file_path = os.path.join(current_dir, '..', 'data/RAG_Data-ProductExpert.pdf')
 
 loader = PyPDFLoader(file_path)
 pages = loader.load_and_split()

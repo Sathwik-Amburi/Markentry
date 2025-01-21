@@ -24,9 +24,7 @@ ai_respond_results = []
 
 # Main conversation loop
 print('Welcome to the Autonomous Drone Market Explorer!')
-print(
-	"Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n"
-)
+print("Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n")
 
 conversation_turn = 1
 user_input = None

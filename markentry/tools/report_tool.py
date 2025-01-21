@@ -130,7 +130,7 @@ Strategic actions to expand in the market and deepen relationships with governme
 model = ChatOpenAI(model='gpt-4o-mini')
 
 
-def generate_report(md_file_path, filename='rewrite_conversation_log.md'):
+def generate_report(md_file_path, filename='generate_report.md'):
 	"""Generate a report from a markdown file based on a given template."""
 	# Load the markdown content
 	with open(md_file_path, 'r') as md_file:

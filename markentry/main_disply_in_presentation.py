@@ -12,7 +12,7 @@ thread_config: RunnableConfig = {
 }
 
 # Directory where the output PDF will be saved
-output_dir = 'outputs'
+output_dir = 'markentry/outputs'
 
 
 def is_command(input_str: str) -> bool:
@@ -27,9 +27,7 @@ ai_respond_results = []
 
 # Main conversation loop
 print('Welcome to the Autonomous Drone Market Explorer!')
-print(
-	"Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n"
-)
+print("Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n")
 
 conversation_turn = 1
 user_input = None
@@ -91,10 +89,3 @@ while True:
 file_path = save_var_to_md(output_dir, ai_respond_results)
 report_dir = generate_report(file_path)
 markdown_to_pdf(report_dir)
-
-
-###################################################################################################################
-#  question examples:
-#  i want to explore entering the autonomous military drone market in the USA. What are some key considerations?
-#  resume：Could you recommend an ideal segment or target audience to focus on for the initial entry?
-#  resume：Could you suggest complementary industies or partnerships to enhance our entry strategy?

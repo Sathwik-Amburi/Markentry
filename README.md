@@ -37,7 +37,7 @@ $ poetry self add poetry-dotenv-plugin
 ```bash
 $ poetry run main
 ```
-7. to check the generated report in website
+6. to check the generated report in website
 $ streamlit run streamlit.py
 
 About main:

@@ -37,12 +37,20 @@ $ poetry self add poetry-dotenv-plugin
 ```bash
 $ poetry run main
 ```
-6. to check the generated report in website
+7. to check the generated report in website
 $ streamlit run streamlit.py
 
+About main:
+Three predefined question is designed to guide the system to generate the first version of report.
+At anytime, type "report" to generate a report, a report and a conversation log in markdown file is generated in output directiory.
+Each new report and conversation log will overwrite the previous one.
+To ask follow-up question, start your input with "resume: " followed by your question.
+To view the generated report on website, refer to point 7.
+Once all the question are answered, type "exit" to end the session.
+After exiting, updated report and conversation log (markdown file) along with a PDF version of the report will be generated and saved in the output directory.
 
-## Citation
-Please cite this repo as follows:
+
+This repo is based on the follows:
 ```
 Beckenbauer, L.; Grosser, M.; Moreira, D. Jr.; Haverland, T. (2024). Orchestrator Multi-Agent App (Version 0.0.1).
 ```

@@ -1,124 +1,94 @@
 from langchain_core.runnables import RunnableConfig
 from markentry.workflow import graph
 from langgraph.types import Command
-from markentry.tools.ai_message_to_report import generate_report_from_markdown
-from langchain_openai import ChatOpenAI
-
+from markentry.tools.report_tool import generate_report, save_var_to_md, markdown_to_pdf
 import uuid
-import os
 
+
+# Configuration
+thread_config: RunnableConfig = {
+	'configurable': {'thread_id': uuid.uuid4()},
+	'recursion_limit': 150,
+}
+
+# Directory where the output PDF will be saved
+output_dir = 'markentry/outputs'
+
+
+def is_command(input_str: str) -> bool:
+	"""
+	Check if the input is a follow-up (resume) command or a new question.
+	"""
+	return input_str.lower().startswith('resume:')
 
 def main():
-	# List of user inputs, preserving your example sequence
-	inputs = [
-		# 1st round of conversation
-		{
-			'messages': [
-				{
-					'role': 'user',
-					'content': 'i want to explore entering the autonomous military drone market in the USA. What are some key considerations?',
-				}
-			]
-		},
-		# 2nd round of conversation: using Command resume
-		Command(
-			resume='Could you recommend an ideal segment or target audience to focus on for the initial entry?'
-		),
-		# 3rd round of conversation: using Command resume
-		Command(
-			resume='Could you suggest complementary industries or partnerships to enhance our entry strategy?'
-		),
-	]
-
-	# Configuration
-	thread_config: RunnableConfig = {
-		'configurable': {'thread_id': uuid.uuid4()},
-		'recursion_limit': 150,
-	}
-
-	# Keep track of all user and AI messages
+	# saving all ai responses for PDF export
 	ai_respond_results = []
 
-	# Run the conversation turns
-	for idx, user_input in enumerate(inputs):
-		print()
-		print(f'--- Conversation Turn {idx + 1} ---')
-		print()
+	# Main conversation loop
+	print('Welcome to the Autonomous Drone Market Explorer!')
+	print("Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n")
 
-		# Print user input to terminal
-		if isinstance(user_input, dict) and 'messages' in user_input:
-			# It's a new query
-			user_msg = user_input['messages'][0]['content']
+	conversation_turn = 1
+	user_input = None
+	predefined_inputs = [
+		'What are the key capabilities and features of the product of Fortion Tactical?',
+		'resume: What are the primary use cases for Fortion Tactical?',
+		'resume: What are the advantages of using Fortion Tactical compared to alternatives?',
+	]
+
+	while True:
+		print(f'--- Conversation Turn {conversation_turn} ---')
+		if conversation_turn > len(predefined_inputs):
+			user_input = input('User: ').strip()
 		else:
-			# It's a resume command
-			user_msg = user_input.resume
+			user_input = predefined_inputs[conversation_turn - 1]
 
-		print(f'User: {user_msg}\n')
-		ai_respond_results.append(f'User: {user_msg}')
+		if user_input.lower() == 'report':
+			print('Processing the report......')
+			file_path = save_var_to_md(output_dir, ai_respond_results)
+			generate_report(file_path)
+			conversation_turn += 1
+			continue
+		elif user_input.lower() == 'exit':
+			print('Exiting the conversation. Goodbye!')
+			break
 
-		# Stream the graph responses
+		# Log user input
+		ai_respond_results.append(f'User: {user_input}')
+
+		# Prepare input based on whether it’s a Command or a new query
+		if is_command(user_input):
+			graph_input = Command(resume=user_input[len('resume:') :].strip())
+			print('Follow up question recognized!')
+		else:
+			graph_input = {'messages': [{'role': 'user', 'content': user_input}]}
+
+		print('\nProcessing...\n')
+
+		# Process the graph input and stream responses
 		for update in graph.stream(
-			user_input,
+			graph_input,
 			config=thread_config,
 			stream_mode='updates',
 		):
 			for node_id, value in update.items():
 				if isinstance(value, dict) and value.get('messages', []):
 					last_message = value['messages'][-1]
-					if isinstance(last_message, dict) or last_message.type != 'ai':
+					if isinstance(last_message, dict):
 						continue
-					# Print AI message to terminal
-					print(f'{node_id}: {last_message.content}')
-					ai_respond_results.append(f'{node_id}: {last_message.content}')
+					elif last_message.type == 'ai':
+						print(f'{node_id}: {last_message.content}')
+						ai_respond_results.append(f'{node_id}: {last_message.content}')
+					else:
+						print('false content')
 
-	# --------------------------------
-	# AFTER the conversation is done,
-	# save the conversation log and generate a PDF
-	# --------------------------------
+		print('\n')
+		conversation_turn += 1
 
-	output_dir = 'markentry/outputs'
-	os.makedirs(output_dir, exist_ok=True)
-
-	# File path for the conversation log
-	output_file_path = os.path.join(output_dir, 'conversation_log.md')
-
-	# If an old log file exists, remove it
-	if os.path.exists(output_file_path):
-		os.remove(output_file_path)
-		print(f"Existing file 'conversation_log.md' deleted from {output_dir}")
-
-	# Save conversation log as Markdown
-	with open(output_file_path, 'w', encoding='utf-8') as md_file:
-		md_file.write('# Conversation Log\n\n')
-		for entry in ai_respond_results:
-			md_file.write(f'{entry}\n\n')
-	print(f"Conversation log saved as 'conversation_log.md' at {output_file_path}")
-
-	# Use your model to generate a more polished report from the Markdown
-	model = ChatOpenAI(model='gpt-4o-mini')
-	md_file_path = output_file_path
-
-	# Generate the report (optionally PDF) and rewrite
-	output_pdf_path = os.path.join(output_dir, 'rewrite_conversation_log.pdf')
-	report_content = generate_report_from_markdown(md_file_path, model, output_dir)
-
-	# Save the "rewritten" content to another Markdown file
-	rewrite_output_md_path = os.path.join(output_dir, 'rewrite_conversation_log.md')
-
-	if isinstance(report_content, (list, dict)):
-		report_content_str = (
-			'\n'.join([str(item) for item in report_content])
-			if isinstance(report_content, list)
-			else str(report_content)
-		)
-	else:
-		report_content_str = str(report_content)
-
-	with open(rewrite_output_md_path, 'w', encoding='utf-8') as md_file:
-		md_file.write(report_content_str)
-
-	print(f'Report saved to Markdown file at: {rewrite_output_md_path}')
-
+	file_path = save_var_to_md(output_dir, ai_respond_results)
+	report_dir = generate_report(file_path)
+	markdown_to_pdf(report_dir)
 
 if __name__ == '__main__':
 	main()

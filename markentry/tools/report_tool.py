@@ -163,7 +163,7 @@ def generate_report(md_file_path, filename='generate_report.md'):
 		md_file.write(report_content_str)
 
 	print(f"Conversation log saved as '{filename}' at {rewrite_output_path}")
-	return rewrite_output_path
+	return report, rewrite_output_path
 
 
 def save_var_to_md(output_dir, ai_respond_results, filename='conversation_log.md'):

@@ -16,7 +16,7 @@ def main():
 			'messages': [
 				{
 					'role': 'user',
-					'content': 'i want to explore entering the autonomous military drone market in the USA. What are some key considerations?',
+					'content': 'I want to explore entering the autonomous military drone market in the USA. What are some key considerations?',
 				}
 			]
 		},

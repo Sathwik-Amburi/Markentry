@@ -3,7 +3,11 @@ from markentry.workflow import graph
 from langgraph.types import Command
 from markentry.tools.report_tool import generate_report, save_var_to_md, markdown_to_pdf
 import uuid
-
+import streamlit as st
+import os
+from typing import Any, Union
+from langchain_core.runnables import RunnableConfig
+from sympy import content
 
 # Configuration
 thread_config: RunnableConfig = {
@@ -21,37 +25,51 @@ def is_command(input_str: str) -> bool:
 	"""
 	return input_str.lower().startswith('resume:')
 
+# Streamlit UI
+st.title("Market entry portfolio team")
+st.write("Question 1: What are the key capabilities and features of the product of Fortion Tactical?")
+st.write("Follow up question 2: What are the primary use cases for Fortion Tactical?")
+st.write("Follow up question 3: What are the advantages of using Fortion Tactical compared to alternatives?")
+st.write("Below is the innitial report of Fortion Tactical. Please ask your questions or follow-up-questions ('resume: ...') to get more insights.")
+
 def main():
 	# saving all ai responses for PDF export
 	ai_respond_results = []
 
 	# Main conversation loop
-	print('Welcome to the Autonomous Drone Market Explorer!')
+	print('Welcome to discuss with the market entry portfolio team!')
 	print("Type your questions or follow-up-questions (e.g., 'resume: ...'). Type 'exit' to quit.\n")
 
 	conversation_turn = 1
+
 	user_input = None
 	predefined_inputs = [
 		'What are the key capabilities and features of the product of Fortion Tactical?',
 		'resume: What are the primary use cases for Fortion Tactical?',
 		'resume: What are the advantages of using Fortion Tactical compared to alternatives?',
 	]
+	report_turn = len(predefined_inputs) + 1
+	qa_turn = report_turn + 1
+	exit_turn = qa_turn + 1
 
 	while True:
 		print(f'--- Conversation Turn {conversation_turn} ---')
-		if conversation_turn > len(predefined_inputs):
-			user_input = input('User: ').strip()
-		else:
+		if conversation_turn <= len(predefined_inputs):
 			user_input = predefined_inputs[conversation_turn - 1]
 
-		if user_input.lower() == 'report':
+			#user_input = input('User: ').strip()
+		elif conversation_turn == report_turn:
 			print('Processing the report......')
 			file_path = save_var_to_md(output_dir, ai_respond_results)
-			generate_report(file_path)
+			report, _ = generate_report(file_path)
+			st.write(f'{report}')
 			conversation_turn += 1
 			continue
-		elif user_input.lower() == 'exit':
+		elif conversation_turn == qa_turn:
+			user_input = st.text_input("Enter here:", "Resume: Can you recommend an effective strategy for the target country based on the discussed results?").strip()
+		elif conversation_turn == exit_turn:
 			print('Exiting the conversation. Goodbye!')
+			st.success("Completed!")
 			break
 
 		# Log user input
@@ -79,6 +97,8 @@ def main():
 						continue
 					elif last_message.type == 'ai':
 						print(f'{node_id}: {last_message.content}')
+						if conversation_turn > len(predefined_inputs):
+							st.write(f'{last_message.content}')
 						ai_respond_results.append(f'{node_id}: {last_message.content}')
 					else:
 						print('false content')
@@ -87,7 +107,8 @@ def main():
 		conversation_turn += 1
 
 	file_path = save_var_to_md(output_dir, ai_respond_results)
-	_, report_dir = generate_report(file_path)
+	report, report_dir = generate_report(file_path)
+	st.write(f'{report}')
 	markdown_to_pdf(report_dir)
 
 if __name__ == '__main__':

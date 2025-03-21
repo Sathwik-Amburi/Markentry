@@ -7,7 +7,7 @@ from langgraph.types import Command
 
 # Configuration
 OUTPUT_DIR = "markentry/outputs"
-REPORT_FILE = os.path.join(OUTPUT_DIR, "generate_report.md")
+REPORT_FILE = os.path.join(OUTPUT_DIR, "rewrite_conversation_log.md")
 
 # Set Streamlit page config
 st.set_page_config(page_title=" Market Entry Report", page_icon="📄", layout="wide")
